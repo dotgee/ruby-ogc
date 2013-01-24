@@ -1,11 +1,11 @@
 # -*- encoding: utf-8 -*-
-require File.expand_path('../lib/ruby-ogc/version', __FILE__)
+require File.expand_path('../lib/rogc/version', __FILE__)
 
 Gem::Specification.new do |gem|
   gem.authors       = ["Philippe HUET"]
   gem.email         = ["philippe@dotgee.fr"]
-  gem.description   = %q{TODO: Write a gem description}
-  gem.summary       = %q{TODO: Write a gem summary}
+  gem.description   = %q{Ruby lib for OGC manipulations}
+  gem.summary       = %q{Ruby lib for OGC manipulations}
   gem.homepage      = ""
 
   gem.files         = `git ls-files`.split($\)
