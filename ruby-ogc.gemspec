@@ -14,4 +14,6 @@ Gem::Specification.new do |gem|
   gem.name          = "ruby-ogc"
   gem.require_paths = ["lib"]
   gem.version       = Ruby::Ogc::VERSION
+
+  gem.add_dependency  "libxml-ruby"
 end
