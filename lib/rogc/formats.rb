@@ -1,2 +1,2 @@
-require 'xml'
-require 'wms_capabilities'
+require 'formats/xml'
+require 'formats/wms_capabilities'
