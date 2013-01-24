@@ -1,3 +1,5 @@
+$:.unshift File.dirname(__FILE__)
+
 require 'wms_capabilities/base'
 require 'wms_capabilities/v1'
 require 'wms_capabilities/v1_1'

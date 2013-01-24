@@ -33,15 +33,3 @@ module ROGC
       end
   end
 end
-
-url = ARGV.shift
-
-puts "No url specified" and Kernel.exit(1) if url.nil?
-
-client = ROGC::WMSClient.new(url) # ('http://preprod.osuris.org/geoserver/wms')
-
-capabilities = client.capabilities
-
-capabilities.capability.layers.each do |layer|
-  puts layer.name
-end
