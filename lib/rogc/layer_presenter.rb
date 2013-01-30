@@ -57,5 +57,14 @@ module ROGC
     def native_bounding_box
       bounding_box(native_srs)
     end
+
+    def time_dimension
+      @olayer.dimensions['time']
+    end
+
+    def time_dimension_values
+      return [] unless time_dimension.any?
+      time_dimension.values
+    end
   end
 end
