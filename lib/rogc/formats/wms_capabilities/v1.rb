@@ -4,6 +4,12 @@ module ROGC
       class V1 < Base
         self.version = '1.0.0'
 
+        NAMESPACES = {
+          wms: 'http://www.opengis.net/wms',
+          xlink: 'http://www.w3.org/1999/xlink',
+          xsi: 'http://www.w3.org/2001/XMLSchema-instance'
+        }
+
         def initialize
           super
           @xml_readers = xml_readers.merge({
@@ -41,7 +47,8 @@ module ROGC
               # obj
               bbox
             },
-            'OnlineReource' => lambda { |node, obj|
+            'OnlineResource' => lambda { |node, obj|
+              obj.href = node['href']
               # obj.contact_information = OpenStruct.new
               # read_child_nodes(node, obj.contact_information)
             },
@@ -139,7 +146,8 @@ module ROGC
                 {
                   nested_layers: Array.new,
                   styles: parent_layer.nil? ? Array.new : [] + parent_layer.styles,
-                  srs: parent_layer.nil? ? {} : {}.merge(parent.srs),
+                  srs: parent_layer.nil? ? [] : Array.new(parent.srs),
+                  layer_srs: [],
                   metadata_urls: [],
                   bbox: parent_layer.nil? ? {} : {}.merge(parent.bbox),
                   llbbox: parent.llbbox,
@@ -187,17 +195,41 @@ module ROGC
               # Handle layer name
               #
             },
+            'Attribution' => lambda { |node, obj|
+              obj.attribution = OpenStruct.new
+              read_child_nodes(node, obj.request)
+            },
+            'LogoURL' => lambda { |node, obj|
+              obj.logo = OpenStruct.new({
+                width: node['width'],
+                height: node['height']
+              })
+              read_child_nodes(node, obj.logo)
+            },
             'Request' => lambda { |node, obj|
               obj.request = OpenStruct.new
               read_child_nodes(node, obj.request)
-            },
-            'KeywordList' => lambda { |node, obj|
-              read_child_nodes(node, obj)
             },
             'Style' => lambda { |node, obj|
               style = OpenStruct.new
               obj.styles << style
               read_child_nodes(node, style)
+            },
+            'LegendURL' => lambda { |node, obj|
+              legend = OpenStruct.new({
+                width: node['width'],
+                height: node['height']
+              })
+              obj.legend = legend
+              read_child_nodes(node, legend)
+            },
+            'MetadataURL' => lambda { |node, obj|
+              metadata_url = OpenStruct.new({ type: node['type'] })
+              obj.metadata_urls << metadata_url
+              read_child_nodes(node, metadata_url)
+            },
+            'KeywordList' => lambda { |node, obj|
+              read_child_nodes(node, obj)
             },
             'SRS' => lambda { |node, obj|
               get_srs(node, obj)
@@ -209,8 +241,15 @@ module ROGC
         end
 
         def get_srs(node, obj)
-          obj.srs ||= Hash.new
-          obj.srs[child_value(node)] = true
+          # obj.srs ||= Hash.new
+          # obj.srs[child_value(node)] = true
+          srs = child_value(node)
+
+          obj.srs ||= Array.new
+          obj.srs << srs
+          if obj.layer_srs && obj.layer_srs.is_a?(Array)
+            obj.layer_srs << srs
+          end
         end
 
         def get_bounding_box(node, obj)

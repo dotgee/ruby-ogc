@@ -67,6 +67,20 @@ module ROGC
                   # obj.minScale = parseFloat(this.getChildValue(node)).toPrecision(16);
                   obj.max_scale = child_value(node).to_f.round(16)
                 },
+                'Dimension' => lambda { |node, obj|
+                  name = node['name'].downcase
+                  dim = OpenStruct.new({
+                    name: name,
+                    units: node['units'],
+                    unitsymbol: node['unitSymbol'],
+                    nearestVal: node['nearestValue'],
+                    multipleVal: node['multipleValues'],
+                    default: node['default'] || '',
+                    current: node['current'],
+                    values: child_value(node).split(",")
+                  })
+                  obj.dimensions[dim.name] = dim;
+                },
                 'Keyword' => lambda { |node, obj|
                   keyword = {
                     'value' => child_value(node),

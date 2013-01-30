@@ -21,6 +21,27 @@ unless Object.respond_to?(:to_bool)
   end
 end
 
+unless OpenStruct.respond_to?(:to_hash)
+
+  class OpenStruct
+    def to_hash
+      return {} unless self._table_hash
+      return @table.inject({}) do |h, (key, value)|
+        value = value.to_hash if value.respond_to?(:to_hash)
+        h.merge!({ key: value })
+        h
+      end
+    end
+
+    private
+
+    def _table_hash
+      @table
+    end
+
+  end
+end
+
 #
 # TODO: OnlineResource
 #

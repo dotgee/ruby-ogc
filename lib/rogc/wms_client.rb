@@ -2,6 +2,7 @@ $:.unshift File.dirname(__FILE__)
 
 require 'formats'
 require 'open-uri'
+require 'cgi'
 
 
 module ROGC
@@ -13,43 +14,44 @@ module ROGC
 
     def capabilities
       return @capabilities if @capabilities
-      doc = open(build_wms_url)
+      doc = open(self.class.build_wms_url(@wms_url))
       format = ROGC::Formats::WMSCapabilities::Base.new
 
       @capabilities = format.read(doc)
       @capabilities
     end
 
-    def map(layer, srs = 'CRS:84')
-      build_map_request(layer, srs)
-    end
+    class << self
+      def get_map(wms_url, layer_name, bbox = [], width = 128, height = 128, srs = 'EPSG:4326', params = {})
+        build_map_request(wms_url, layer_name, bbox, width, height, srs, params)
+      end
 
-    private
-      def build_wms_url(request = 'GetCapabilities', version = "1.3.0", params = {})
+      def build_wms_url(wms_url, request = 'GetCapabilities', version = "1.3.0", params = {})
         params.merge!({
           'service' => 'wms',
           'request' => request,
           'version' => version
         })
 
-        query_string = params.map { |k,v| "#{k}=#{v}" }.join('&')
-        "#{@wms_url}?#{query_string}"
+        query_string = params.map { |k,v| "#{CGI::escape(k)}=#{CGI::escape(v.to_s)}" }.join('&')
+        "#{wms_url}?#{query_string}"
       end
 
-      def build_map_request(layer, width = 128, heigth = 128, srs = 'CRS:84', params = {})
+      def build_map_request(wms_url, layer_name, bbox = [], width = 128, height = 128, srs = 'EPSG:4326', params = {})
         params.merge!({
           'format' => 'image/png',
           'transparent' => true,
-          'layers' => layer.name,
+          'layers' => layer_name,
           'style' => '',
           'height' => height,
           'width' => width,
           'srs'   => srs,
-          'bbox'  => layer.bbox[srs] ? layer.bbox[srs].bbox.join(',') : [11.544243804517265, -0.2895834470186168, 11.802380437565015, -0.0314468139708675].join(',')
+          'bbox'  => bbox.any? ? bbox.join(',') : [11.544243804517265, -0.2895834470186168, 11.802380437565015, -0.0314468139708675].join(',')
         })
 
-        build_wms_url('GetMap', '1.3.0', params)
+        build_wms_url(wms_url, 'GetMap', '1.3.0', params)
       end
+    end
 
   end
 end
