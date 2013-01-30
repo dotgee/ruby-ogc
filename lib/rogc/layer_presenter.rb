@@ -63,7 +63,7 @@ module ROGC
     end
 
     def time_dimension_values
-      return [] unless time_dimension && time_dimension.any?
+      return [] unless time_dimension && time_dimension.values && time_dimension.values.any?
       time_dimension.values
     end
   end
