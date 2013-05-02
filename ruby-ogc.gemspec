@@ -16,4 +16,5 @@ Gem::Specification.new do |gem|
   gem.version       = Ruby::Ogc::VERSION
 
   gem.add_dependency  "libxml-ruby"
+  gem.add_dependency  "curb"
 end
