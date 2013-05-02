@@ -1,7 +1,7 @@
 $:.unshift File.dirname(__FILE__)
 
 require 'formats'
-require 'open-uri'
+require 'curb'
 require 'cgi'
 
 
@@ -14,7 +14,7 @@ module ROGC
 
     def capabilities
       return @capabilities if @capabilities
-      doc = open(self.class.build_wms_url(@wms_url))
+      doc = Curl.get(self.class.build_wms_url(@wms_url)).body_str
       format = ROGC::Formats::WMSCapabilities::Base.new
 
       @capabilities = format.read(doc)
