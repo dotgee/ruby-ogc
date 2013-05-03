@@ -42,7 +42,7 @@ module ROGC
           'format' => 'image/png',
           'transparent' => true,
           'layers' => layer_name,
-          'style' => '',
+          'styles' => '',
           'height' => height,
           'width' => width,
           'crs'   => srs,
