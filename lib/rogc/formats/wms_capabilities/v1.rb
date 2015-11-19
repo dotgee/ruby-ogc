@@ -206,10 +206,6 @@ module ROGC
               })
               read_child_nodes(node, obj.logo)
             },
-            'Request' => lambda { |node, obj|
-              obj.request = OpenStruct.new
-              read_child_nodes(node, obj.request)
-            },
             'Style' => lambda { |node, obj|
               style = OpenStruct.new
               obj.styles << style
